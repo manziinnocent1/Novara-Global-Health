@@ -43,11 +43,13 @@ function App() {
 
   const navItems = useMemo(
     () => [
-      { label: "Solutions", href: "#solutions" },
-      { label: "Research", href: "#research" },
-      { label: "Pipeline", href: "#pipeline" },
-      { label: "Contact", href: "#contact" },
+      { label: "Home", href: "#top" },
       { label: "About us", href: "#about" },
+      { label: "Solutions", href: "#solutions" },
+      // { label: "Research", href: "#research" },
+      { label: "Pipeline", href: "#pipeline" },
+      { label: "Our Team", href: "#team" },
+      { label: "Contact", href: "#contact" },
     ],
     [],
   );

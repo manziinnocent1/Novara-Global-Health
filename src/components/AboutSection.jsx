@@ -1,3 +1,5 @@
+import { FaBullseye, FaLightbulb, FaGlobe } from "react-icons/fa";
+
 export function AboutSection() {
   return (
     <section id="about" className="section" data-reveal>
@@ -5,23 +7,37 @@ export function AboutSection() {
         <div className="section-head">
           <h2>Who We Are</h2>
         </div>
-        <div className="about-content">
-          <p>
-            At Novara Global Health, our name reflects our ultimate vision: Nova
-            stands for a new frontier, a new exceptional standard of care where
-            global health equity is a reality, not just an aspiration. We
-            believe that access to high-quality, evidence-based medicine should
-            never be limited by geography, systemic delays, or socioeconomic
-            circumstance. Our commitment is to advance global health equity
-            through digital health innovations, health education, and
-            evidence-based care. By translating rigorous clinical research into
-            scalable digital infrastructure, we build digital health solutions
-            that empower people and strengthen health systems worldwide. Through
-            these advanced, inclusive tools, Novara Global Health is bridging
-            the critical gap between facility-based care and the home
-            environment, ensuring that medical excellence reaches the
-            communities that need it most.
-          </p>
+
+        <div className="bento">
+          <article className="card glass">
+            <FaBullseye size={40} color="#e63946" /> {/* red icon */}
+            <p className="card-kicker">Our Purpose</p>
+            <h3>Advancing global health equity</h3>
+            <p>
+              We believe that high-quality, evidence-based care should not be
+              limited by geography, socioeconomic status, or system delays.
+            </p>
+          </article>
+
+          <article className="card glass">
+            <FaLightbulb size={40} color="#f4a261" /> {/* orange icon */}
+            <p className="card-kicker">Our Approach</p>
+            <h3>Digital innovation for care delivery</h3>
+            <p>
+              We translate clinical research into scalable digital systems that
+              empower providers and patients across communities.
+            </p>
+          </article>
+
+          <article className="card glass">
+            <FaGlobe size={40} color="#2a9d8f" /> {/* teal icon */}
+            <p className="card-kicker">Our Impact</p>
+            <h3>Bridging facilities to the home</h3>
+            <p>
+              Our tools strengthen health systems by connecting facility-based
+              care with the home environment to improve outcomes.
+            </p>
+          </article>
         </div>
       </div>
     </section>
