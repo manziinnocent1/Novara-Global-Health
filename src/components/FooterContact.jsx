@@ -121,7 +121,7 @@ export function FooterContact({
             <textarea
               name="message"
               rows={5}
-              placeholder="Tell us what you’re building…"
+              placeholder="Tell us how we can help you or share your feedback"
               required
             />
           </label>

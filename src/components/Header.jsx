@@ -1,41 +1,37 @@
-import { ThemeToggle } from "./ThemeToggle.jsx";
-import logo from "../assets/novara_logo.png"; // import your logo
+import React from "react";
+import logo from "../assets/novara_logo.png"; // <-- place your logo file in src/assets
 
-export function Header({ navId, navItems, theme, onToggleTheme }) {
+export function Header({
+  navId,
+  navItems,
+  theme,
+  onToggleTheme,
+  showGetStarted,
+}) {
   return (
-    <header className="site-header" aria-label="Primary">
-      <div className="container header-inner">
-        <a className="brand" href="#top" aria-label="Novara Global Health">
-          {/* Show only the logo image */}
-          <img
-            src={logo}
-            alt="Novara Global Health Logo"
-            className="brand-mark"
-          />
+    <header className="site-header">
+      <nav id={navId} className="nav-bar">
+        <a className="brand" href="#top">
+          <img src={logo} alt="Novara Global Health" className="brand-logo" />
         </a>
-
-        <nav aria-labelledby={navId} className="nav">
-          <span className="sr-only" id={navId}>
-            Primary navigation
-          </span>
-          <ul className="nav-list">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <a className="nav-link" href={item.href}>
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="header-cta">
-          <a className="btn btn-primary" href="#/register">
-            Get Started
-          </a>
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        <ul className="nav-links">
+          {navItems.map((item) => (
+            <li key={item.href}>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+        <div className="nav-actions">
+          <button onClick={onToggleTheme} className="theme-toggle">
+            {theme === "light" ? "Light" : "Dark"}
+          </button>
+          {showGetStarted && (
+            <a href="#/register" className="btn btn-primary get-started">
+              Get Started
+            </a>
+          )}
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

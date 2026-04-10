@@ -4,6 +4,33 @@ export function Register() {
   const [mode, setMode] = useState("register");
   const [userType, setUserType] = useState("user");
 
+  function handleRegister(e) {
+    e.preventDefault();
+
+    // Save role in localStorage
+    localStorage.setItem("role", userType);
+
+    // Redirect based on role
+    if (userType === "doctor") {
+      window.location.hash = "#/doctor-dashboard";
+    } else {
+      window.location.hash = "#/user-dashboard";
+    }
+  }
+
+  function handleLogin(e) {
+    e.preventDefault();
+
+    // Read role from localStorage
+    const role = localStorage.getItem("role");
+
+    if (role === "doctor") {
+      window.location.hash = "#/doctor-dashboard";
+    } else {
+      window.location.hash = "#/user-dashboard";
+    }
+  }
+
   return (
     <section className="register-page" aria-label="Register and login">
       <div className="register-container">
@@ -19,7 +46,7 @@ export function Register() {
               <h2>Create Account</h2>
               <p>Join our team to access the platform.</p>
 
-              <form className="auth-form">
+              <form className="auth-form" onSubmit={handleRegister}>
                 <label className="auth-field">
                   <select
                     className="auth-input"
@@ -90,7 +117,7 @@ export function Register() {
               <h2>Sign In</h2>
               <p>Enter your credentials to access your account.</p>
 
-              <form className="auth-form">
+              <form className="auth-form" onSubmit={handleLogin}>
                 <label className="auth-field">
                   <span className="auth-label">Email</span>
                   <input

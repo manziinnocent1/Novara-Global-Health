@@ -1,4 +1,4 @@
-import innocentPhoto from "../assets/innocent.jpeg";
+import innocentPhoto from "../assets/inno.jpeg";
 import merciPhoto from "../assets/merci.png";
 export function LeadershipSection() {
   return (
