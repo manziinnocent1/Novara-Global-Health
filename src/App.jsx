@@ -44,7 +44,9 @@ function App() {
     return () => window.removeEventListener("hashchange", updateRoute);
   }, []);
 
-  // Public nav (before login)
+  const isUserDashboard = route.startsWith("#/user-dashboard");
+  const isDoctorDashboard = route.startsWith("#/doctor-dashboard");
+
   const publicNavItems = useMemo(
     () => [
       { label: "Home", href: "#top" },
@@ -57,7 +59,6 @@ function App() {
     [],
   );
 
-  // User dashboard nav
   const userNavItems = [
     { label: "Home", href: "#/user-dashboard" },
     { label: "Courses", href: "#/user-dashboard#courses" },
@@ -65,12 +66,11 @@ function App() {
     { label: "Profile", href: "#/user-dashboard#profile" },
   ];
 
-  // Doctor dashboard nav
   const doctorNavItems = [
     { label: "Home", href: "#/doctor-dashboard" },
-    { label: "Courses", href: "#/doctor-dashboard#courses" },
-    { label: "Users", href: "#/doctor-dashboard#users" },
-    { label: "Analytics", href: "#/doctor-dashboard#analytics" },
+    { label: "Courses", href: "#/doctor-dashboard#courses" }, // FIXED: Use # for sub-routing
+    { label: "Users", href: "#/doctor-dashboard#users" }, // FIXED: Use # for sub-routing
+    { label: "Analytics", href: "#/doctor-dashboard#analytics" }, // FIXED: Use # for sub-routing
   ];
 
   function onToggleTheme() {
@@ -81,7 +81,6 @@ function App() {
     e.preventDefault();
     setContactStatus("sending");
     try {
-      // ... your contact form logic
       setContactStatus("sent");
     } catch (err) {
       setContactStatus("error");
@@ -89,13 +88,11 @@ function App() {
     }
   }
 
-  // Choose nav items based on route
-  const navItems =
-    route === "#/user-dashboard"
-      ? userNavItems
-      : route === "#/doctor-dashboard"
-        ? doctorNavItems
-        : publicNavItems;
+  const navItems = isUserDashboard
+    ? userNavItems
+    : isDoctorDashboard
+      ? doctorNavItems
+      : publicNavItems;
 
   return (
     <>
@@ -109,19 +106,17 @@ function App() {
         theme={theme}
         onToggleTheme={onToggleTheme}
         showGetStarted={
-          route !== "#/user-dashboard" && route !== "#/doctor-dashboard"
+          !isUserDashboard && !isDoctorDashboard && route !== "#/register"
         }
-        isDashboard={
-          route === "#/user-dashboard" || route === "#/doctor-dashboard"
-        }
+        isDashboard={isUserDashboard || isDoctorDashboard}
       />
 
       {route === "#/register" ? (
         <Register />
-      ) : route === "#/user-dashboard" ? (
-        <UserDashboard />
-      ) : route === "#/doctor-dashboard" ? (
-        <DoctorDashboard />
+      ) : isUserDashboard ? (
+        <UserDashboard route={route} />
+      ) : isDoctorDashboard ? (
+        <DoctorDashboard route={route} /> // FIXED: Passing route prop
       ) : (
         <main id="main">
           <Hero />
