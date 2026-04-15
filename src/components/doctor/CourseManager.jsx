@@ -10,30 +10,8 @@ import {
 } from "lucide-react";
 
 const CourseManager = ({ courses: propCourses }) => {
-  // Use props or high-quality defaults for visual impact
-  const courses = propCourses || [
-    {
-      id: 1,
-      title: "Advanced Cardiology",
-      students: 45,
-      status: "Published",
-      color: "#3b82f6",
-    },
-    {
-      id: 2,
-      title: "Mental Health Awareness",
-      students: 32,
-      status: "Published",
-      color: "#10b981",
-    },
-    {
-      id: 3,
-      title: "Nutrition & Wellness",
-      students: 12,
-      status: "Draft",
-      color: "#f59e0b",
-    },
-  ];
+  // Logic remains the same, but we ensure status and color have fallbacks
+  const courses = propCourses || [];
 
   return (
     <div className="container animate-fadeIn">
@@ -63,7 +41,7 @@ const CourseManager = ({ courses: propCourses }) => {
             <div key={course.id} className="management-card">
               <div
                 className="card-status-strip"
-                style={{ backgroundColor: course.color }}
+                style={{ backgroundColor: course.color || "#ccc" }} // Fallback color
               ></div>
 
               <div className="card-main-content">
@@ -71,8 +49,8 @@ const CourseManager = ({ courses: propCourses }) => {
                   <div
                     className="icon-box"
                     style={{
-                      backgroundColor: `${course.color}15`,
-                      color: course.color,
+                      backgroundColor: `${course.color || "#ccc"}15`,
+                      color: course.color || "#ccc",
                     }}
                   >
                     <BookOpen size={22} />
@@ -86,9 +64,9 @@ const CourseManager = ({ courses: propCourses }) => {
                   <h3>{course.title}</h3>
                   <div className="badge-row">
                     <span
-                      className={`status-pill ${course.status.toLowerCase()}`}
+                      className={`status-pill ${(course.status || "Draft").toLowerCase()}`} // Added fallback to prevent crash
                     >
-                      {course.status}
+                      {course.status || "Draft"}
                     </span>
                     <span className="student-count">
                       {course.students} Students

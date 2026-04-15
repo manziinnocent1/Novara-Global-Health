@@ -68,9 +68,9 @@ function App() {
 
   const doctorNavItems = [
     { label: "Home", href: "#/doctor-dashboard" },
-    { label: "Courses", href: "#/doctor-dashboard#courses" }, // FIXED: Use # for sub-routing
-    { label: "Users", href: "#/doctor-dashboard#users" }, // FIXED: Use # for sub-routing
-    { label: "Analytics", href: "#/doctor-dashboard#analytics" }, // FIXED: Use # for sub-routing
+    { label: "Courses", href: "#/doctor-dashboard/courses" },
+    { label: "Users", href: "#/doctor-dashboard/users" },
+    { label: "Analytics", href: "#/doctor-dashboard/analytics" },
   ];
 
   function onToggleTheme() {
@@ -116,7 +116,7 @@ function App() {
       ) : isUserDashboard ? (
         <UserDashboard route={route} />
       ) : isDoctorDashboard ? (
-        <DoctorDashboard route={route} /> // FIXED: Passing route prop
+        <DoctorDashboard />
       ) : (
         <main id="main">
           <Hero />
