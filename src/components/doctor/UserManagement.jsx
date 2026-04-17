@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Users,
   Mail,
@@ -7,10 +7,12 @@ import {
   Search,
   Download,
   Filter,
+  Trash2,
+  Edit,
 } from "lucide-react";
 
 const UserManagement = ({ users: propUsers }) => {
-  // Innovative default data to ensure the UI looks high-end
+  // Innovative default data
   const defaultUsers = [
     {
       id: 1,
@@ -38,7 +40,51 @@ const UserManagement = ({ users: propUsers }) => {
     },
   ];
 
-  const users = propUsers || defaultUsers;
+  // --- FUNCTIONAL STATES ---
+  const [data, setData] = useState(propUsers || defaultUsers);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeMenu, setActiveMenu] = useState(null); // For the Actions dropdown
+
+  // --- SEARCH LOGIC ---
+  const filteredUsers = data.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  // --- FILTER LOGIC (Toggles only Active students) ---
+  const handleToggleFilter = () => {
+    if (data.length < (propUsers || defaultUsers).length) {
+      setData(propUsers || defaultUsers); // Reset
+    } else {
+      setData(data.filter((u) => u.status === "Active")); // Show only Active
+    }
+  };
+
+  // --- EXPORT CSV LOGIC ---
+  const exportToCSV = () => {
+    const headers = ["Name,Email,Course,Progress,Status\n"];
+    const rows = filteredUsers.map(
+      (u) => `${u.name},${u.email},${u.course},${u.progress}%,${u.status}\n`,
+    );
+    const blob = new Blob([headers, ...rows], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "student_directory.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  // --- DELETE LOGIC (Action Button) ---
+  const deleteUser = (id) => {
+    if (window.confirm("Remove student from directory?")) {
+      setData(data.filter((u) => u.id !== id));
+      setActiveMenu(null);
+    }
+  };
 
   return (
     <div className="container animate-fadeIn">
@@ -48,7 +94,7 @@ const UserManagement = ({ users: propUsers }) => {
           <p>Monitor clinical student enrollment and academic performance.</p>
         </div>
         <div className="header-actions">
-          <button className="btn-secondary-sm">
+          <button className="btn-secondary-sm" onClick={exportToCSV}>
             <Download size={16} /> Export CSV
           </button>
         </div>
@@ -61,14 +107,22 @@ const UserManagement = ({ users: propUsers }) => {
           <input
             type="text"
             placeholder="Search students by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <button className="filter-pill">
-          <Filter size={16} /> Filters
+        <button
+          className={`filter-pill ${data.length < (propUsers || defaultUsers).length ? "active-filter" : ""}`}
+          onClick={handleToggleFilter}
+        >
+          <Filter size={16} />{" "}
+          {data.length < (propUsers || defaultUsers).length
+            ? "Show All"
+            : "Filter Active"}
         </button>
       </div>
 
-      {/* INNOVATIVE TABLE DESIGN */}
+      {/* TABLE DESIGN */}
       <div className="modern-table-card">
         <table className="innovative-user-table">
           <thead>
@@ -81,8 +135,8 @@ const UserManagement = ({ users: propUsers }) => {
             </tr>
           </thead>
           <tbody>
-            {users.length > 0 ? (
-              users.map((user) => (
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td>
                     <div className="user-profile-cell">
@@ -128,10 +182,30 @@ const UserManagement = ({ users: propUsers }) => {
                       {user.status || "Active"}
                     </span>
                   </td>
-                  <td>
-                    <button className="icon-btn-ghost">
+                  <td style={{ position: "relative" }}>
+                    <button
+                      className="icon-btn-ghost"
+                      onClick={() =>
+                        setActiveMenu(activeMenu === user.id ? null : user.id)
+                      }
+                    >
                       <MoreVertical size={18} />
                     </button>
+
+                    {/* ACTIONS DROPDOWN */}
+                    {activeMenu === user.id && (
+                      <div className="actions-dropdown-menu">
+                        <button onClick={() => alert(`Editing ${user.name}`)}>
+                          <Edit size={14} /> Edit Profile
+                        </button>
+                        <button
+                          className="delete-action"
+                          onClick={() => deleteUser(user.id)}
+                        >
+                          <Trash2 size={14} /> Remove Student
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))
@@ -139,7 +213,7 @@ const UserManagement = ({ users: propUsers }) => {
               <tr>
                 <td colSpan="5" className="empty-table-state">
                   <Users size={48} />
-                  <p>No students enrolled in your curriculum yet.</p>
+                  <p>No results found matching your search.</p>
                 </td>
               </tr>
             )}

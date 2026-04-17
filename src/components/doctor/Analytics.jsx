@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BarChart3,
   Users,
@@ -6,16 +6,34 @@ import {
   TrendingUp,
   Activity,
   PieChart,
+  Loader2, // Added for loading state
+  CheckCircle,
 } from "lucide-react";
 
 const Analytics = ({ stats: propStats }) => {
-  // Professional default stats for a doctor's view
+  // --- FUNCTIONAL STATES ---
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Professional default stats
   const stats = propStats || {
     totalCourses: 3,
     totalUsers: 142,
     avgCompletion: 68,
     activeNow: 12,
     completionTrend: "+12%",
+  };
+
+  // --- REPORT GENERATION LOGIC ---
+  const handleGenerateReport = () => {
+    setIsGenerating(true);
+
+    // Simulate a professional processing delay
+    setTimeout(() => {
+      setIsGenerating(false);
+      // Trigger browser print which allows "Save as PDF"
+      // In a production app, you'd use a library like jsPDF here
+      window.print();
+    }, 1500);
   };
 
   return (
@@ -25,12 +43,26 @@ const Analytics = ({ stats: propStats }) => {
           <h2 className="gradient-text">Performance Insights</h2>
           <p>Real-time data on course engagement and student success rates.</p>
         </div>
-        <button className="btn btn-primary-outline">Generate PDF Report</button>
+
+        {/* FUNCTIONAL BUTTON */}
+        <button
+          className={`btn btn-primary-outline ${isGenerating ? "loading" : ""}`}
+          onClick={handleGenerateReport}
+          disabled={isGenerating}
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 size={16} className="animate-spin" /> Preparing Report...
+            </>
+          ) : (
+            "Generate PDF Report"
+          )}
+        </button>
       </header>
 
       {/* Primary Metrics Grid */}
       <div className="analytics-grid-innovative">
-        <div className="stat-card-premium">
+        <div className="stat-card-premium clickable-stat">
           <div className="stat-card-icon blue">
             <BookOpen size={24} />
           </div>
@@ -41,7 +73,7 @@ const Analytics = ({ stats: propStats }) => {
           </div>
         </div>
 
-        <div className="stat-card-premium">
+        <div className="stat-card-premium clickable-stat">
           <div className="stat-card-icon green">
             <Users size={24} />
           </div>
@@ -52,7 +84,7 @@ const Analytics = ({ stats: propStats }) => {
           </div>
         </div>
 
-        <div className="stat-card-premium">
+        <div className="stat-card-premium clickable-stat">
           <div className="stat-card-icon purple">
             <Activity size={24} />
           </div>

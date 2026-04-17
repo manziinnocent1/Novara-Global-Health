@@ -1,11 +1,11 @@
-import React, { useState } from "react"; // Added useState
+import React, { useState } from "react";
 import {
   HashRouter,
   Routes,
   Route,
   Navigate,
   useNavigate,
-} from "react-router-dom"; // Added useNavigate
+} from "react-router-dom";
 import {
   Users,
   BookOpen,
@@ -15,6 +15,8 @@ import {
   MoreHorizontal,
   Download,
   TrendingUp,
+  Trash2,
+  Mail,
 } from "lucide-react";
 
 import CourseManager from "./CourseManager";
@@ -23,6 +25,33 @@ import Analytics from "./Analytics";
 
 const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
   const navigate = useNavigate();
+  const [filterActive, setFilterActive] = useState(false);
+  const [activeUserMenu, setActiveUserMenu] = useState(null);
+
+  // 1. Logic for Exporting Data
+  const handleExport = () => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      "Type,Name,Details\n" +
+      courses
+        .map((c) => `Course,${c.title},${c.students} Students`)
+        .join("\n") +
+      "\n" +
+      users.map((u) => `Student,${u.name},${u.progress}% Progress`).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "doctor_dashboard_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // 2. Logic for Course Filtering (Toggle Published vs All)
+  const displayedCourses = filterActive
+    ? courses.filter((c) => c.status === "Published")
+    : courses;
 
   return (
     <div className="container animate-fadeIn">
@@ -32,10 +61,9 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
           <p>Monitor curriculum performance and student clinical progress.</p>
         </div>
         <div className="header-actions">
-          <button className="btn-secondary-sm">
+          <button className="btn-secondary-sm" onClick={handleExport}>
             <Download size={16} /> Export Data
           </button>
-          {/* Navigation to Course Manager to create new */}
           <button
             className="btn-primary-sm"
             onClick={() => navigate("/doctor-dashboard/courses")}
@@ -45,7 +73,6 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
         </div>
       </header>
 
-      {/* Stats Grid Remains Same */}
       <div className="insights-grid">
         <div className="insight-mini-card">
           <div className="insight-icon blue">
@@ -83,14 +110,15 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
         <div className="section-title-bar">
           <h2>Curriculum Management</h2>
           <button
-            className="link-btn"
-            onClick={() => navigate("/doctor-dashboard/courses")}
+            className={`link-btn ${filterActive ? "active-filter" : ""}`}
+            onClick={() => setFilterActive(!filterActive)}
           >
-            Manage All <Filter size={14} />
+            {filterActive ? "Showing Published" : "Manage All"}{" "}
+            <Filter size={14} />
           </button>
         </div>
         <div className="doctor-course-grid">
-          {courses.map((course) => (
+          {displayedCourses.map((course) => (
             <div key={course.id} className="doctor-course-card">
               <div
                 className="course-card-image"
@@ -107,14 +135,12 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
                 <h3>{course.title}</h3>
                 <p>{course.description}</p>
                 <div className="course-card-actions">
-                  {/* Redirects to Editor view in CourseManager */}
                   <button
                     className="btn-edit"
                     onClick={() => navigate("/doctor-dashboard/courses")}
                   >
                     Edit
                   </button>
-                  {/* Calls the delete function passed via props */}
                   <button
                     className="btn-delete"
                     onClick={() => onDeleteCourse(course.id)}
@@ -128,7 +154,6 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
         </div>
       </section>
 
-      {/* Clinical Student Progress Table remains same */}
       <section className="dashboard-section-modern">
         <div className="section-title-bar">
           <h2>Clinical Student Progress</h2>
@@ -171,10 +196,33 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
                       <span>{user.progress}%</span>
                     </div>
                   </td>
-                  <td>
-                    <button className="icon-btn-ghost">
+                  <td style={{ position: "relative" }}>
+                    <button
+                      className="icon-btn-ghost"
+                      onClick={() =>
+                        setActiveUserMenu(
+                          activeUserMenu === user.id ? null : user.id,
+                        )
+                      }
+                    >
                       <MoreHorizontal size={18} />
                     </button>
+
+                    {/* Functional Action Dropdown */}
+                    {activeUserMenu === user.id && (
+                      <div className="dashboard-action-dropdown">
+                        <button
+                          onClick={() =>
+                            (window.location.href = `mailto:${user.email}`)
+                          }
+                        >
+                          <Mail size={14} /> Message Student
+                        </button>
+                        <button className="text-danger">
+                          <Trash2 size={14} /> Remove Access
+                        </button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -187,7 +235,6 @@ const DashboardHomeContent = ({ stats, courses, users, onDeleteCourse }) => {
 };
 
 const DoctorDashboard = () => {
-  // 1. Move static data into State
   const [courses, setCourses] = useState([
     {
       id: 1,
@@ -235,7 +282,6 @@ const DoctorDashboard = () => {
     },
   ]);
 
-  // 2. Logic to delete a course
   const handleDeleteCourse = (id) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
       setCourses(courses.filter((course) => course.id !== id));
@@ -263,7 +309,6 @@ const DoctorDashboard = () => {
               />
             }
           />
-          {/* We pass state and setter to CourseManager so edits update the dashboard */}
           <Route
             path="/doctor-dashboard/courses"
             element={
